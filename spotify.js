@@ -31,6 +31,9 @@ const getFromApi = function (endpoint, query = {}) {
   });
 };
 
+//************************** */
+//my code starts below
+//************************** */
 let artist;
 
 const getArtist = function (name) {
@@ -43,16 +46,22 @@ const getArtist = function (name) {
 
   return getFromApi('search', query).then( item => {
     artist = item.artists.items[0];
-    console.log(artist.id);
     return getFromApi(`artists/${artist.id}/related-artists`).then(response => {
       artist.related = response.artists;
-      return artist;
+      const promises = [];
+      artist.related.forEach(item => {
+        promises.push(getFromApi(`artists/${item.id}/top-tracks?country=US`));
+      });
+      return Promise.all(promises).then(topTracks => {
+          topTracks.forEach((array, index) => {
+            artist.related[index].tracks = array.tracks;
+          });
+          return artist;
+      });
     });
-  }).catch(function(err) {
+    }).catch(function(err) {
     console.error('cannot return result');
   });
-  // Edit me!
-  // (Plan to call `getFromApi()` several times over the whole exercise from here!)
 };
 
 
