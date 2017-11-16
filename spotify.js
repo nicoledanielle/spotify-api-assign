@@ -1,6 +1,6 @@
 'use strict';
 
-const CLIENT_ID = '8a96ae40fbd54426b41cd54c461171a7';
+const CLIENT_ID = 'a1ac7fcff79f4257a3acbdd9c3e8afc5';
 
 const getFromApi = function (endpoint, query = {}) {
   // You won't need to change anything in this function, but you will use this function 
@@ -41,13 +41,15 @@ const getArtist = function (name) {
     type: 'artist'
   };
 
-  getFromApi('search', query).then( item => {
+  return getFromApi('search', query).then( item => {
     artist = item.artists.items[0];
-    console.log('I made it here!');
-    return {artist};
-  }).then( res => {
-    console.log('json version', res.json());
-    return res.json();
+    console.log(artist.id);
+    return getFromApi(`artists/${artist.id}/related-artists`).then(response => {
+      artist.related = response.artists;
+      return artist;
+    });
+  }).catch(function(err) {
+    console.error('cannot return result');
   });
   // Edit me!
   // (Plan to call `getFromApi()` several times over the whole exercise from here!)
