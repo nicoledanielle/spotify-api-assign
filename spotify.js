@@ -41,7 +41,7 @@ const getArtist = function (name) {
     type: 'artist'
   };
 
-  getFromApi('/search', query).then( item => {
+  getFromApi('search', query).then( item => {
     artist = item.artists.items[0];
     console.log('I made it here!');
     return {artist};
